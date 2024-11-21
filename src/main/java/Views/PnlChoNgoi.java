@@ -1,0 +1,373 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
+ */
+package Views;
+
+import Controller.BillDAO;
+import Controller.BookingDAO;
+import Controller.BookingDetailsDAO;
+import Controller.RoomScheduleMovieDAO;
+import Controller.ScheduleDAO;
+import Controller.SeatDAO;
+import Models.Booking;
+import Models.BookingDetails;
+import Models.RoomScheduleMovie;
+import Models.Schedule;
+import Models.Seat;
+import Models.User;
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.BorderFactory;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+
+/**
+ *
+ * @author nguye
+ */
+public class PnlChoNgoi extends javax.swing.JPanel {
+
+    /**
+     * Creates new form PnlChoNgoi
+     */
+//    private int scheduleId;
+    private JLabel[][] labels = new JLabel[5][5];
+    private Schedule curentSchedule = null;
+    private User currentUser;
+    private List<Integer> selectedSeats = new ArrayList<>(); // is selecting
+    
+    public PnlChoNgoi(int scheduleId, User user) {
+        initComponents();
+        pnlMain.setLayout(new GridLayout(5, 5, 10, 10));
+        pnlMain.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        initLabels(scheduleId, user);
+//        btnThanhToan.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                // Đóng JFrame chứa panel này
+//                JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(PnlChoNgoi.this);
+//                if (parentFrame != null) {
+//                    parentFrame.dispose();
+//                }
+//            }
+//        });
+    }
+    
+    private void initLabels(int scheduleId, User user) {
+        currentUser = user;
+        System.out.println("Username is booking: " + currentUser.getUsername());
+        SeatDAO seatDao = new SeatDAO();
+        int[] seatBooked = new int[0]; // Mặc định là mảng rỗng
+        try {
+            seatBooked = seatDao.getSeatNumbersByScheduleId(scheduleId); // Lấy số ghế đã đặt
+            ScheduleDAO ScheduleDAO = new ScheduleDAO();
+            curentSchedule = ScheduleDAO.getScheduleById(scheduleId);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(PnlChoNgoi.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // Duyệt qua hàng và cột để tạo JLabel cho từng ghế
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                int seatId = i * 5 + j + 1; // Tạo ID ghế (1-25)
+                JLabel label = new JLabel("" + seatId, SwingConstants.CENTER);
+                label.setOpaque(true);
+                label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+
+                // Kiểm tra ghế có nằm trong danh sách đã đặt không
+                boolean isBooked = Arrays.stream(seatBooked).anyMatch(x -> x == seatId);
+
+                // Đặt màu ghế: đỏ nếu đã đặt, trắng nếu chưa
+                label.setBackground(isBooked ? Color.RED : Color.WHITE);
+
+                // Xử lý sự kiện click chuột
+                label.addMouseListener(new MouseAdapter() {
+                    @Override
+                        public void mouseClicked(MouseEvent e) {
+                        if (label.getBackground() == Color.CYAN) {
+                            label.setBackground(Color.WHITE); // Trở lại trạng thái ban đầu
+                            selectedSeats.remove((Integer) seatId); // Loại bỏ ghế khỏi danh sách
+                        } else if (label.getBackground() == Color.WHITE) {
+                            label.setBackground(Color.CYAN); // Đổi màu khi được chọn
+                            selectedSeats.add(seatId); // Thêm ghế vào danh sách
+                        }
+                        System.out.println("Selected Seats: " + selectedSeats); // Debug danh sách ghế đã chọn
+                    }
+                });
+
+                // Gán vào mảng labels và thêm vào giao diện
+                labels[i][j] = label;
+                pnlMain.add(label);
+            }
+        }
+        
+    }
+
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        btnThanhToan = new javax.swing.JButton();
+        pnlMain = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+
+        btnThanhToan.setText("Thanh toán!");
+        btnThanhToan.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnThanhToanMouseClicked(evt);
+            }
+        });
+        btnThanhToan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThanhToanActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout pnlMainLayout = new javax.swing.GroupLayout(pnlMain);
+        pnlMain.setLayout(pnlMainLayout);
+        pnlMainLayout.setHorizontalGroup(
+            pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        pnlMainLayout.setVerticalGroup(
+            pnlMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 370, Short.MAX_VALUE)
+        );
+
+        jLabel1.setText("Màn hình chiếu");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(pnlMain, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(226, Short.MAX_VALUE)
+                .addComponent(btnThanhToan, javax.swing.GroupLayout.PREFERRED_SIZE, 236, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(215, 215, 215))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(293, 293, 293)
+                .addComponent(jLabel1)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addGap(10, 10, 10)
+                .addComponent(pnlMain, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+                .addComponent(btnThanhToan, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnThanhToanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThanhToanActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnThanhToanActionPerformed
+
+    private void btnThanhToanMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnThanhToanMouseClicked
+        
+        // Kiểm tra user tồn tại và có ghế đang chọn
+        if(currentUser == null){
+            System.out.println("Vui lòng đăng nhập để đặt vé");
+            return;
+        }
+        else if(selectedSeats.isEmpty()){
+            System.out.println("Vui lòng chọn ghế ngồi trước khi thanh toán");
+        }
+        
+        //Dữ liệu cho hóa đơn:
+        RoomScheduleMovieDAO roomScheduleMovieDAO = new RoomScheduleMovieDAO();
+        RoomScheduleMovie roomScheduleMovie = null;
+        try {
+            roomScheduleMovie = roomScheduleMovieDAO.getRoomScheduleMovieByScheduleId(curentSchedule.getScheduleId());
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(PnlChoNgoi.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String cinemaName = "DDL CINEMA";
+        String movieTitle = roomScheduleMovie.getMovieName();
+        String timeBooking = "";
+        String schedule =  curentSchedule.getScheduleStart() + ", " + curentSchedule.getScheduleDate(); // "20:00, Ngày 19/11/2024";
+        String customerName = currentUser.getFullname();
+        String room = roomScheduleMovie.getRoomName();
+        String address = "234 Hoàng Quốc Việt, Hà Nội";
+        int bookingId;
+
+        List<String[]> servicePrice = new ArrayList<>();
+        
+        
+        try{
+            // Lấy userId và scheduleId roomId
+            int userId = currentUser.getUserId();
+            int scheduleId = curentSchedule.getScheduleId();
+            int roomId = curentSchedule.getRoomId();
+            // Tính tổng tiền:
+            float totalAmount = 0;
+            for(int i : selectedSeats){
+                String[] servicePriceItem = null;
+                if(i <= 10){
+                    totalAmount += 50000;
+                    servicePriceItem = new String[] {"Ghế " + i, "50000"};
+                } else if(i <= 20){
+                    totalAmount += 60000;
+                    servicePriceItem = new String[] {"Ghế " + i, "60000"};
+                }
+                else if(i <=25){
+                    totalAmount += 70000;
+                    servicePriceItem = new String[] {"Ghế " + i, "70000"};
+                }
+//                seatInfo += " ," + i;
+                servicePrice.add(servicePriceItem);
+            }
+            // Thêm dữ liệu vào bảng booking
+            BookingDAO bookingDAO = new BookingDAO();
+            SeatDAO seatDao = new SeatDAO();
+            BookingDetailsDAO bookingDetailsDAO = new BookingDetailsDAO();
+            LocalDate bookingDate = LocalDate.now();
+            LocalTime bookingTime = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
+            timeBooking = bookingDate.toString()+", " +  bookingTime.toString() + "";
+            Booking booking = new Booking(userId, scheduleId, bookingDate, bookingTime, totalAmount, "Đặt Online", false);
+//            boolean rsBooking = bookingDAO.addBooking(booking);
+//            if(rsBooking){
+//                System.out.println("Thêm booking thành công!");
+//            }
+            bookingId = bookingDAO.addBooking(booking);
+            if(bookingId > 0)
+                System.out.println("Thêm booking thành công!");
+            // Lấy mã booking từ userId và scheduleId
+//            int bookingId = bookingDAO.getBookingByUserIdAndScheduleId(userId, scheduleId).getBookingId();
+            
+            // Xử lý add Seat and Booking_detail (Nhiều seat)
+            for(int i : selectedSeats){
+                // i = seatId
+                // Xử lý tạo Seat và Booking_detail
+                String type = "";
+                float seatPrice = 0;
+                if(i <= 10){
+                   type = "Ghế thường";
+                   seatPrice = 50000;
+                } else if(i <= 20){
+                    seatPrice = 60000;
+                    type = "Ghế vip";
+                } else if(i <=25){
+                    type = "XVIP";
+                    seatPrice = 70000;
+                }
+                // number = i
+
+                Seat seat = new Seat(type, roomId, scheduleId, i, 0, false);
+                int seatId = seatDao.addSeat(seat); // Hàm thêm seat và trả về seatId đã thêm
+                if(seatId > 0){
+                    System.out.println("Thêm seat" + i + " thành công");
+                }
+                
+                // Xử lý tạo Booking_Detail
+                // Đã có bookingId, roomId, seatId, 
+                BookingDetails BookingDetails = new BookingDetails(bookingId, seatId, seatPrice);
+                boolean result = bookingDetailsDAO.addBookingDetail(BookingDetails);
+                if(result){
+                    System.out.println("Thêm BookingDetail thành công!");
+                }
+                
+            }
+            
+            String filePath = "";
+            // Tạo JFileChooser để mở cửa sổ chọn file
+            JFileChooser fileChooser = new JFileChooser();
+
+            // Cấu hình JFileChooser để cho phép chọn thư mục lưu file
+            fileChooser.setDialogTitle("Chọn vị trí lưu file");
+            fileChooser.setSelectedFile(new File("movie_bill_DDL_" + scheduleId +".pdf")); // Tên tệp mặc định
+
+            // Mở cửa sổ chọn file và kiểm tra nếu người dùng chọn tệp
+            int userSelection = fileChooser.showSaveDialog(null);
+            // Kiểm tra kết quả chọn file
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                // Lấy đường dẫn tệp người dùng chọn
+                File fileToSave = fileChooser.getSelectedFile();
+                filePath = fileToSave.getAbsolutePath();
+            }
+            // Đường dẫn lưu file hóa đơn
+    //        String filePath = "D:\\movie_ticket_invoice.pdf";
+
+            // Dữ liệu ví dụ
+//            String cinemaName = "DLL Cinema";
+//            String movieTitle = "Avengers: Endgame";
+//            String seatInfo = "A1, A2, A3";
+//            String schedule = "20:00, Ngày 19/11/2024";
+//            String customerName = "Khúc Xuân Triển";
+//            String room = "Room 1";
+//            String address = "234 Hoàng Quốc Việt, Hà Nội";
+//            int bookingID = 23;
+//
+//            List<String[]> servicePrice = new ArrayList<>();
+
+            // Thêm các mảng chuỗi vào danh sách
+//            servicePrice.add(new String[] {"1", "50000"});
+//            servicePrice.add(new String[] {"2", "50000"});
+//            servicePrice.add(new String[] {"Bỏng ngô", "60000"});
+//            servicePrice.add(new String[] {"Nước Pesi", "70000"});
+            BillDAO billDAO = new BillDAO(filePath, cinemaName, movieTitle, timeBooking, room, schedule, address, customerName, bookingId, servicePrice);
+        }catch(Exception ex){
+            
+        }
+        
+//        for(int i : selectedSeats){
+//            SeatDAO seatDao = new SeatDAO();
+//            BookingDAO bookingDAO = new BookingDAO();
+//            // Xử lý tạo Seat
+//            String type = "";
+//            if(i <= 10){
+//               type = "Ghế thường";
+//            } else if(i <= 20)
+//                type = "Ghế vip";
+//            else if(i <=25)
+//                type = "XVIP";
+//            
+//            // number = i
+//            
+//            Seat seat = new Seat(type, roomId, scheduleId, i, 0, false);
+//            boolean result = seatDao.addSeat(seat);
+//            if(result)
+//                System.out.println("Add seat successfully");
+//
+//            // Xử lý tạo Booking
+////            Booking booking = new Booking(currentUser.getUserId(), scheduleId, LocalDate.now(), LocalTime.now(), 50, "Chuyển khoản", false);
+////            boolean rsBooking = bookingDAO.addBooking(booking);
+//        }
+    }//GEN-LAST:event_btnThanhToanMouseClicked
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnThanhToan;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JPanel pnlMain;
+    // End of variables declaration//GEN-END:variables
+}
